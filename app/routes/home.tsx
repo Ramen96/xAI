@@ -1,7 +1,7 @@
+import { list } from "postcss";
 import type { Route } from "./+types/home";
 import { ArrowUpCircleIcon } from "lucide-react";
-import { useState } from "react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Form } from "react-router";
 import ChatBubbles from "~/components/chat-bubble";
 
@@ -62,6 +62,35 @@ export default function Home() {
     }
   }
 
+  const [messages, setMessages] = useState<object>([
+    {
+      id: 1,
+      role: "user",
+      message: "Lorem ipsum dolor sit amet consectetur adipisicing elit."
+    },
+    {
+      id: 2,
+      role: "system",
+      message: "Itaque, dignissimos dolores placeat optio quos repellat blanditiis fuga porro tenetur natus?"
+    },
+    {
+      id: 3,
+      role: "user",
+      message: "Lorem ipsum dolor sit amet consectetur adipisicing elit."
+    },
+    {
+      id: 4,
+      role: "system",
+      message: "Itaque, dignissimos dolores placeat"
+    },
+    {
+      id: 5,
+      role: "user",
+      message: "aksjdlkfjasldkjfkalsdjfjasdhf9uqehrjkqashunjqwiaofj jfpoiqjrof oihwhpoifjqoir fh 9oqrfopqherf -hooiqh froqhporif hoieehrfh ereroioffoior rfq"
+    }
+
+  ]);
+
   return (
     <>
       <nav className="nav">
@@ -69,7 +98,7 @@ export default function Home() {
       </nav>
       <div className="chat-window-wrapper">
         <div className="chat-window">
-          <ChatBubbles />
+          <ChatBubbles messages={messages} />
         </div>
         <section className="input-section">
           <Form method="post" navigate={false} action="/home" >
