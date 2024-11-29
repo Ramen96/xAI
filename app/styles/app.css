@@ -54,7 +54,7 @@ button {
   left: 0px;
   width: 100vw;
   height: 3rem;
-  background: linear-gradient(var(--main-bg-color), rgba(0,0,0,0));
+  background: transparent;
   display: flex;
   align-items: center;
 }
