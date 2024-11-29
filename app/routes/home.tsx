@@ -1,25 +1,26 @@
-import { list } from "postcss";
 import type { Route } from "./+types/home";
 import { ArrowUpCircleIcon } from "lucide-react";
-import { useRef, useState } from "react";
+import React, { useRef, useState, useEffect} from "react";
 import { Form } from "react-router";
 import ChatBubbles from "~/components/chat-bubble";
-
 const XAI_API_KEY = import.meta.env.VITE_XAI_API_KEY;
-
 export function meta({}: Route.MetaArgs) {
   return [
     { title: "xAI" },
     { name: "description", content: "xAI chat bot aka Grok" },
   ];
 }
-
+interface Message {
+  id: string;
+  role: string;
+  message: string;
+}
 export default function Home() {
+  const inputRef = useRef<any>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [textField, setTextField] = useState<string>('');
 
   // ToDo: move to action function
-  const [textField, setTextField] = useState<string>('');
-  const inputRef = useRef<any>(null);
-
   const handleSubmit = () => {
     const options = {
       method: "POST",
@@ -43,15 +44,27 @@ export default function Home() {
       temperature: 0
       })
     }
-
+    const newUserMessage = {
+      id: `${Math.random()}`,
+      role: "user",
+      message: `${textField}`
+    }
+    setMessages(prevState => prevState.concat(newUserMessage));
     if (textField.length > 0) {
       fetch("https://api.x.ai/v1/chat/completions", options)
         .then(response => response.json())
-        .then(data => console.log(data.choices[0].message.content))
+        .then(data => {
+          const systemMessageContent = data.choices[0].message.content;
+          const newSystemMessage = {
+            id: `${Math.random()}`,
+            role: "system",
+            message: `${systemMessageContent}`
+          }
+          setMessages(prevState => prevState.concat(newSystemMessage));
+        })
         .catch(err => console.error(err));
     }
   }
-
   const handleEnterKeySubmit = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === 'Enter') {
       event.preventDefault();
@@ -61,36 +74,6 @@ export default function Home() {
       setTextField('');
     }
   }
-
-  const [messages, setMessages] = useState<object>([
-    {
-      id: 1,
-      role: "user",
-      message: "Lorem ipsum dolor sit amet consectetur adipisicing elit."
-    },
-    {
-      id: 2,
-      role: "system",
-      message: "Itaque, dignissimos dolores placeat optio quos repellat blanditiis fuga porro tenetur natus?"
-    },
-    {
-      id: 3,
-      role: "user",
-      message: "Lorem ipsum dolor sit amet consectetur adipisicing elit."
-    },
-    {
-      id: 4,
-      role: "system",
-      message: "Itaque, dignissimos dolores placeat"
-    },
-    {
-      id: 5,
-      role: "user",
-      message: "aksjdlkfjasldkjfkalsdjfjasdhf9uqehrjkqashunjqwiaofj jfpoiqjrof oihwhpoifjqoir fh 9oqrfopqherf -hooiqh froqhporif hoieehrfh ereroioffoior rfq"
-    }
-
-  ]);
-
   return (
     <>
       <nav className="nav">
@@ -130,7 +113,6 @@ export default function Home() {
     </>
   )
 }
-
 
 export async function action( request: any) {
   const data  = await request;
